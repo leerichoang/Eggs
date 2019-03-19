@@ -247,7 +247,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     }
     
-    func fireShot(){
+    func fireShot(_ spot: CGPoint){
         let rock = SKSpriteNode(imageNamed: "Rock")
         rock.setScale(1)
         rock.position = player.position
@@ -259,21 +259,112 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         rock.physicsBody!.contactTestBitMask = PhysicsCategories.Egg
 
         self.addChild(rock)
-
         let moveRock = SKAction.moveTo(y: gameArea.maxY, duration: 1)
         let deleteRock = SKAction.removeFromParent()
         let bulletSequence = SKAction.sequence([moveRock,deleteRock])
         rock.run(bulletSequence)
+        
     }
+    
+    
+    func fireTwoShot(_ spot: CGPoint){
+        let rock = SKSpriteNode(imageNamed: "Rock")
+        rock.setScale(1)
+        rock.position.y = player.position.y
+        rock.position.x = player.position.x-player.size.width/2
+        rock.zPosition = 1
+        rock.physicsBody = SKPhysicsBody(rectangleOf: rock.size)
+        rock.physicsBody!.affectedByGravity = false
+        rock.physicsBody!.categoryBitMask = PhysicsCategories.Rock
+        rock.physicsBody!.collisionBitMask = PhysicsCategories.None
+        rock.physicsBody!.contactTestBitMask = PhysicsCategories.Egg
+        
+        // egg 2
+        let rockTwo = SKSpriteNode(imageNamed: "Rock")
+        rockTwo.setScale(1)
+        rockTwo.position.y = player.position.y
+        rockTwo.position.x = player.position.x+player.size.width/2
+        rockTwo.zPosition = 1
+        rockTwo.physicsBody = SKPhysicsBody(rectangleOf: rock.size)
+        rockTwo.physicsBody!.affectedByGravity = false
+        rockTwo.physicsBody!.categoryBitMask = PhysicsCategories.Rock
+        rockTwo.physicsBody!.collisionBitMask = PhysicsCategories.None
+        rockTwo.physicsBody!.contactTestBitMask = PhysicsCategories.Egg
+        
+        self.addChild(rock)
+                self.addChild(rockTwo)
+        let moveRock = SKAction.moveTo(y: gameArea.maxY, duration: 1)
+        let deleteRock = SKAction.removeFromParent()
+        let bulletSequence = SKAction.sequence([moveRock,deleteRock])
+        
+
+        rock.run(bulletSequence)
+        rockTwo.run(bulletSequence)
+        
+    }
+    
+    func fireThreeShot(_ spot: CGPoint){
+        let rock = SKSpriteNode(imageNamed: "Rock")
+        rock.setScale(1)
+        rock.position.y = player.position.y
+        rock.position.x = player.position.x-player.size.width
+        rock.zPosition = 1
+        rock.physicsBody = SKPhysicsBody(rectangleOf: rock.size)
+        rock.physicsBody!.affectedByGravity = false
+        rock.physicsBody!.categoryBitMask = PhysicsCategories.Rock
+        rock.physicsBody!.collisionBitMask = PhysicsCategories.None
+        rock.physicsBody!.contactTestBitMask = PhysicsCategories.Egg
+        
+        // egg 2
+        let rockTwo = SKSpriteNode(imageNamed: "Rock")
+        rockTwo.setScale(1)
+        rockTwo.position.y = player.position.y
+        rockTwo.position.x = player.position.x+player.size.width
+        rockTwo.zPosition = 1
+        rockTwo.physicsBody = SKPhysicsBody(rectangleOf: rock.size)
+        rockTwo.physicsBody!.affectedByGravity = false
+        rockTwo.physicsBody!.categoryBitMask = PhysicsCategories.Rock
+        rockTwo.physicsBody!.collisionBitMask = PhysicsCategories.None
+        rockTwo.physicsBody!.contactTestBitMask = PhysicsCategories.Egg
+        
+        
+        // egg 2
+        let rockThree = SKSpriteNode(imageNamed: "Rock")
+        rockThree.setScale(1)
+        rockThree.position = player.position
+        rockThree.zPosition = 1
+        rockThree.physicsBody = SKPhysicsBody(rectangleOf: rock.size)
+        rockThree.physicsBody!.affectedByGravity = false
+        rockThree.physicsBody!.categoryBitMask = PhysicsCategories.Rock
+        rockThree.physicsBody!.collisionBitMask = PhysicsCategories.None
+        rockThree.physicsBody!.contactTestBitMask = PhysicsCategories.Egg
+
+        self.addChild(rock)
+        self.addChild(rockTwo)
+        self.addChild(rockThree)
+        let moveRock = SKAction.moveTo(y: gameArea.maxY, duration: 1)
+        let deleteRock = SKAction.removeFromParent()
+        let bulletSequence = SKAction.sequence([moveRock,deleteRock])
+        
+        
+        rock.run(bulletSequence)
+        rockTwo.run(bulletSequence)
+        rockThree.run(bulletSequence)
+        
+    }
+    
     
     override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
         for touch: AnyObject in touches{
             let pointofTouch = touch.location(in: self)
             let previousPointOfTouch = touch.previousLocation(in: self)
             
-            let amountDragged = pointofTouch.x-previousPointOfTouch.x
+            let amountDraggedX = pointofTouch.x-previousPointOfTouch.x
+            let amountDraggedY = pointofTouch.y-previousPointOfTouch.y
             
-            player.position.x += amountDragged
+            player.position.y += amountDraggedY
+            player.position.x += amountDraggedX
+
             
             if(player.position.x > self.gameArea.maxX-player.size.width/2) {
                 player.position.x = self.gameArea.maxX-player.size.width/2
@@ -281,12 +372,27 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             if(player.position.x < self.gameArea.minX+player.size.width/2) {
                 player.position.x = self.gameArea.minX+player.size.width/2
             }
+            if(player.position.y > self.gameArea.maxY/2-player.size.height/2) {
+                player.position.y = self.gameArea.maxY/2-player.size.height/2
+            }
+            if(player.position.y < self.gameArea.minY+player.size.height/2) {
+                player.position.y = self.gameArea.minY+player.size.height/2
+            }
         }
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         for touch: AnyObject in touches{
-                        fireShot()
+                let positionOfTouch = touch.location(in: self)
+            if scoreNum > 200{
+                fireThreeShot(positionOfTouch)
+            }else if scoreNum > 50{
+                fireTwoShot(positionOfTouch)
+            }else{
+                fireShot(positionOfTouch)
+            }
+            
+            
             }
         }
     
